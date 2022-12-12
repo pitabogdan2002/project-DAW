@@ -1,5 +1,6 @@
 ﻿using crowd_knowledge_contribution.Data;
 using crowd_knowledge_contribution.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +10,21 @@ namespace crowd_knowledge_contribution.Controllers
 {
     public class ArticlesController : Controller
     {
-
         private readonly ApplicationDbContext db;
-        public ArticlesController(ApplicationDbContext context)
+        
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public ArticlesController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager
+        )
         {
             db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
+
         public IActionResult Index()
         {
             var articles = db.Articles.Include("Category");

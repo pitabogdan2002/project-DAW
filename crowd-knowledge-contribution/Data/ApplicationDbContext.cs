@@ -4,13 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace crowd_knowledge_contribution.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-            public DbSet<Article> Articles { get; set; }
+            
+        public DbSet<Article> Articles { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
