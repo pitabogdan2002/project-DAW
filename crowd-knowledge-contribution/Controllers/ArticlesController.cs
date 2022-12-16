@@ -1,5 +1,6 @@
 ﻿using crowd_knowledge_contribution.Data;
 using crowd_knowledge_contribution.Models;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -60,7 +61,7 @@ namespace crowd_knowledge_contribution.Controllers
 
         public IActionResult New()
         {
-
+            
             Article article = new Article();
 
             article.Categ = GetAllCategories();
@@ -72,9 +73,10 @@ namespace crowd_knowledge_contribution.Controllers
         [HttpPost]
         public IActionResult New(Article article)
         {
+            var sanitizer = new HtmlSanitizer();
             article.Date = DateTime.Now;
             article.Categ = GetAllCategories();
-
+            article.Content = sanitizer.Sanitize(article.Content);
             try
             {
                 db.Articles.Add(article);
@@ -110,12 +112,15 @@ namespace crowd_knowledge_contribution.Controllers
         [HttpPost]
         public IActionResult Edit(int id, Article requestArticle)
         {
+            var sanitizer = new HtmlSanitizer();
+
             Article article = db.Articles.Find(id);
             requestArticle.Categ = GetAllCategories();
 
             try
             {
                 article.Title = requestArticle.Title;
+                requestArticle.Content = sanitizer.Sanitize(requestArticle.Content);
                 article.Content = requestArticle.Content;
                 article.Date = requestArticle.Date;
                 article.CategoryId = requestArticle.CategoryId;
