@@ -1,6 +1,7 @@
 ﻿using crowd_knowledge_contribution.Data;
 using crowd_knowledge_contribution.Models;
 using Ganss.Xss;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,7 +29,7 @@ namespace crowd_knowledge_contribution.Controllers
 
         public IActionResult Index()
         {
-            var articles = db.Articles.Include("Category");
+            var articles = db.Articles.Include("Category").Include("User");
 
             Article article = new Article();
 
@@ -51,7 +52,7 @@ namespace crowd_knowledge_contribution.Controllers
 
         public IActionResult Show(int id)
         {
-            Article article = db.Articles.Include("Category").Include("Comments")
+            Article article = db.Articles.Include("Category").Include("Comments").Include("User")
                                .Where(art => art.Id == id)
                                .First();
 
@@ -59,6 +60,7 @@ namespace crowd_knowledge_contribution.Controllers
             return View(article);
         }
 
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult New()
         {
             
@@ -71,12 +73,27 @@ namespace crowd_knowledge_contribution.Controllers
 
         // Se adauga articolul in baza de date
         [HttpPost]
+        
         public IActionResult New(Article article)
         {
             var sanitizer = new HtmlSanitizer();
             article.Date = DateTime.Now;
             article.Categ = GetAllCategories();
             article.Content = sanitizer.Sanitize(article.Content);
+            article.UserId = _userManager.GetUserId(User);
+
+            //if (ModelState.IsValid)
+            //{
+            //    db.Articles.Add(article);
+            //    db.SaveChanges();
+            //    TempData["message"] = "Articolul a fost adaugat";
+            //    return RedirectToAction("Index");
+
+            //}
+            //else
+            //{
+            //    return View(article);
+            //}
             try
             {
                 db.Articles.Add(article);
@@ -95,6 +112,7 @@ namespace crowd_knowledge_contribution.Controllers
         // Categoria se selecteaza dintr-un dropdown
         // HttpGet implicit
         // Se afiseaza formularul impreuna cu datele aferente articolului din baza de date
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult Edit(int id)
         {
 
@@ -110,6 +128,7 @@ namespace crowd_knowledge_contribution.Controllers
 
         // Se adauga articolul modificat in baza de date
         [HttpPost]
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult Edit(int id, Article requestArticle)
         {
             var sanitizer = new HtmlSanitizer();
@@ -138,13 +157,24 @@ namespace crowd_knowledge_contribution.Controllers
 
         // Se sterge un articol din baza de date 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             Article article = db.Articles.Find(id);
-            db.Articles.Remove(article);
-            db.SaveChanges();
-            TempData["message"] = "Articolul a fost sters";
-            return RedirectToAction("Index");
+
+            if (User.IsInRole("Admin"))
+            {
+                db.Articles.Remove(article);
+                db.SaveChanges();
+                TempData["message"] = "Articolul a fost sters";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                TempData["message"] = "Nu aveti dreptul sa stergeti acest articol";
+                return RedirectToAction("Index");   
+            }
+                
         }
 
         [NonAction]
