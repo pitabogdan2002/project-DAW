@@ -14,9 +14,13 @@ namespace crowd_knowledge_contribution.Models
         public string Content { get; set; }
         public DateTime Date { get; set; }
         [Required(ErrorMessage = "Categoria este obligatorie")]
+
+        public string Protected { get; set; } = "Unprotected";
         public int CategoryId { get; set; }
 
         public string? UserId { get; set; }
+
+
 
         public virtual ApplicationUser? User { get; set; }
 

@@ -34,7 +34,9 @@
 
     <hr />
 
-    <div class="d-flex flex-row justify-content-between">
+    @if (ViewBag.AfisareButoane == true && Model.UserId == ViewBag.UserCurent && Model.Protected == "Unprotected" || ViewBag.EsteAdmin)
+    {
+        <div class="d-flex flex-row justify-content-between">
 
 
 
@@ -47,6 +49,13 @@
         </form>
 
     </div>
+    }
+      @if(ViewBag.EsteAdmin)
+    {
+        <a class="btn btn-success" href="/Articles/Protect/@Model.Id"> Restrictionare acces </a>
+    }
+    
+
 
 </div>
 
@@ -67,11 +76,14 @@
 
                     <p>@comm.Content</p>
                     <small>@comm.Date</small>
+                    <strong> <i class="bi bi-person"></i>class@comm.User.UserName</strong>
 
                 </div>
                 <br>
 
-                <div class="d-flex">
+                @if(comm.UserId == ViewBag.UserCurent || ViewBag.EsteAdmin)
+                {
+                    <div class="d-flex">
 
                     <div>
 
@@ -89,7 +101,8 @@
 
                     </div>
 
-                </div>
+                    </div>
+                }
 
                 <br />
 
@@ -115,7 +128,7 @@
 
             <div class="card">
 
-                <form method="post" action="/Comments/New">
+                <form method="post" action="/Articles/Show/@Model.Id">
 
                     <div class="card-body">
 

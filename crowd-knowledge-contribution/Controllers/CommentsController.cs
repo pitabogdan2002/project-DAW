@@ -1,5 +1,7 @@
 ﻿using crowd_knowledge_contribution.Data;
 using crowd_knowledge_contribution.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace crowd_knowledge_contribution.Controllers
@@ -8,10 +10,21 @@ namespace crowd_knowledge_contribution.Controllers
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext db;
-        public CommentsController(ApplicationDbContext context)
+
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public CommentsController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager
+        )
         {
             db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
+        
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult New(Comment comm)
         {
             comm.Date = DateTime.Now;
@@ -32,40 +45,72 @@ namespace crowd_knowledge_contribution.Controllers
 
         // Stergerea unui comentariu asociat unui articol din baza de date
         [HttpPost]
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult Delete(int id)
         {
             Comment comm = db.Comments.Find(id);
-            db.Comments.Remove(comm);
-            db.SaveChanges();
-            return Redirect("/Articles/Show/" + comm.ArticleId);
+
+            if (comm.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            {
+
+                db.Comments.Remove(comm);
+                db.SaveChanges();
+                return Redirect("/Articles/Show/" + comm.ArticleId);
+            }
+            else
+            {
+                TempData["message"] = "Acest comentariu nu va apartine";
+                return RedirectToAction("Index", "Articles");
+
+            }
         }
 
         // In acest moment vom implementa editarea intr-o pagina View separata
         // Se editeaza un comentariu existent
 
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult Edit(int id)
         {
             Comment comm = db.Comments.Find(id);
-            ViewBag.Comment = comm;
-            return View();
+
+            if (comm.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            {
+                ViewBag.Comment = comm;
+                return View();
+            }
+            else
+            {
+                TempData["message"] = "Acest comentariu nu va apartine";
+                return RedirectToAction("Index", "Articles");
+            }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult Edit(int id, Comment requestComment)
         {
             Comment comm = db.Comments.Find(id);
-            try
+            if (ModelState.IsValid)
             {
+                if (comm.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+                {
 
-                comm.Content = requestComment.Content;
+                    comm.Content = requestComment.Content;
 
-                db.SaveChanges();
+                    db.SaveChanges();
 
-                return Redirect("/Articles/Show/" + comm.ArticleId);
+                    return Redirect("/Articles/Show/" + comm.ArticleId);
+
+                }
+                else
+                {
+                    TempData["message"] = "Acest comentariu nu va apartine";
+                    return RedirectToAction("Index", "Articles");
+                }
             }
-            catch (Exception e)
+            else
             {
-                return Redirect("/Articles/Show/" + comm.ArticleId);
+                return View(requestComment);
             }
 
         }

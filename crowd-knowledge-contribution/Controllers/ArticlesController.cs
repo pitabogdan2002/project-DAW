@@ -1,4 +1,5 @@
 ﻿using crowd_knowledge_contribution.Data;
+using crowd_knowledge_contribution.Data.Migrations;
 using crowd_knowledge_contribution.Models;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +12,12 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace crowd_knowledge_contribution.Controllers
 {
+    [Authorize]
     public class ArticlesController : Controller
     {
+
         private readonly ApplicationDbContext db;
-        
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         public ArticlesController(
@@ -28,7 +31,7 @@ namespace crowd_knowledge_contribution.Controllers
             _roleManager = roleManager;
         }
 
-        [Authorize(Roles = "User,Editor,Admin")]
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult Index(string Criteriul)
         {
             var articles = db.Articles.Include("Category").Include("User");
@@ -165,20 +168,88 @@ namespace crowd_knowledge_contribution.Controllers
             return View(article);
         }
 
+        [Authorize(Roles = "Admin")]
+        public IActionResult Protect(int id)
+        {
+            
+          Article article = db.Articles.Include("Category")
+                                       .Where(art => art.Id == id)
+                                       .First();
+            if (User.IsInRole("Admin"))
+            {
+                db.Articles.Find(id).Protected = "Protected";
+                db.SaveChanges();
+            }
+            return Redirect("/Articles/Show/" + article.Id);
+        }
+
+        [Authorize(Roles = "Editor,Admin")]
         public IActionResult Show(int id)
         {
-            Article article = db.Articles.Include("Category").Include("Comments").Include("User")
-                               .Where(art => art.Id == id)
-                               .First();
+            Article article = db.Articles.Include("Category")
+                                         .Include("User")
+                                         .Include("Comments")
+                                         .Include("Comments.User")
+                                         .Where(art => art.Id == id)
+                                         .First();
 
+            SetAccessRights();
+            ViewBag.Proteced = article.Protected;
 
             return View(article);
+
         }
+
+        private void SetAccessRights()
+        {
+            ViewBag.AfisareButoane = false;
+            if (User.IsInRole("Editor"))
+            {
+                ViewBag.AfisareButoane = true;
+            }
+
+            ViewBag.UserCurent = _userManager.GetUserId(User);
+
+            ViewBag.EsteAdmin = User.IsInRole("Admin");
+        }
+
+        [HttpPost]
+        public IActionResult Show([FromForm] Comment comment)
+        {
+            comment.Date = DateTime.Now;
+            comment.UserId = _userManager.GetUserId(User);
+
+            if (ModelState.IsValid)
+            {
+                db.Comments.Add(comment);
+                db.SaveChanges();
+                return Redirect("/Articles/Show/" + comment.ArticleId);
+            }
+
+            else
+            {
+                Article art = db.Articles.Include("Category")
+                                         .Include("User")
+                                         .Include("Comments")
+                                         .Include("Comments.User")
+                                         .Where(art => art.Id == comment.ArticleId)
+                                         .First();
+                
+                SetAccessRights();
+
+                //return Redirect("/Articles/Show/" + comm.ArticleId);
+
+                return View(art);
+            }
+        }
+
+
+
 
         [Authorize(Roles = "Editor,Admin")]
         public IActionResult New()
         {
-            
+
             Article article = new Article();
 
             article.Categ = GetAllCategories();
@@ -188,7 +259,8 @@ namespace crowd_knowledge_contribution.Controllers
 
         // Se adauga articolul in baza de date
         [HttpPost]
-        
+        [Authorize(Roles = "Editor,Admin")]
+
         public IActionResult New(Article article)
         {
             var sanitizer = new HtmlSanitizer();
@@ -237,7 +309,16 @@ namespace crowd_knowledge_contribution.Controllers
 
             article.Categ = GetAllCategories();
 
-            return View(article);
+
+            if (article.UserId == _userManager.GetUserId(User) && ViewBag.Protected == "Unprotected" || User.IsInRole("Admin"))
+            {
+                return View(article);
+            }
+            else
+            {
+                TempData["message"] = "Nu puteti edita acest articol deoarece nu va apartine";
+                return RedirectToAction("Index");
+            }
 
         }
 
@@ -253,18 +334,27 @@ namespace crowd_knowledge_contribution.Controllers
 
             try
             {
-                article.Title = requestArticle.Title;
-                requestArticle.Content = sanitizer.Sanitize(requestArticle.Content);
-                article.Content = requestArticle.Content;
-                article.Date = requestArticle.Date;
-                article.CategoryId = requestArticle.CategoryId;
-                db.SaveChanges();
-                TempData["message"] = "Articolul a fost modificat";
-                return RedirectToAction("Index");
+                if (article.UserId == _userManager.GetUserId(User) && ViewBag.Protected == "Unprotected" || User.IsInRole("Admin"))
+                {
+                    article.Title = requestArticle.Title;
+                    requestArticle.Content = sanitizer.Sanitize(requestArticle.Content);
+                    article.Content = requestArticle.Content;
+                    article.Date = requestArticle.Date;
+                    article.CategoryId = requestArticle.CategoryId;
+                    db.SaveChanges();
+                    TempData["message"] = "Articolul a fost modificat";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["message"] = "Nu puteti edita acest articol deoarece nu va apartine";
+                    return RedirectToAction("Index");
+                }
 
             }
             catch (Exception e)
             {
+                requestArticle.Categ = GetAllCategories();
                 return View(requestArticle);
             }
         }
@@ -272,12 +362,14 @@ namespace crowd_knowledge_contribution.Controllers
 
         // Se sterge un articol din baza de date 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Editor,Admin")]
         public ActionResult Delete(int id)
         {
-            Article article = db.Articles.Find(id);
+            Article article = db.Articles.Include("Comments")
+                                         .Where( art=> art.Id == id)
+                                         .First();
 
-            if (User.IsInRole("Admin"))
+            if (article.UserId == _userManager.GetUserId(User) && ViewBag.Protected == "Unprotected" || User.IsInRole("Admin"))
             {
                 db.Articles.Remove(article);
                 db.SaveChanges();

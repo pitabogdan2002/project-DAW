@@ -1,10 +1,12 @@
 ﻿using crowd_knowledge_contribution.Data;
 using crowd_knowledge_contribution.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace crowd_knowledge_contribution.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext db;
