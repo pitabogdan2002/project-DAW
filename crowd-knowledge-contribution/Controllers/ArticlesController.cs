@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+using Edit = crowd_knowledge_contribution.Models.Edit;
+using Favorite = crowd_knowledge_contribution.Models.Favorite;
 
 namespace crowd_knowledge_contribution.Controllers
 {
@@ -175,11 +177,57 @@ namespace crowd_knowledge_contribution.Controllers
           Article article = db.Articles.Include("Category")
                                        .Where(art => art.Id == id)
                                        .First();
+
             if (User.IsInRole("Admin"))
             {
                 db.Articles.Find(id).Protected = "Protected";
                 db.SaveChanges();
             }
+            return Redirect("/Articles/Show/" + article.Id);
+        }
+
+
+        public IActionResult AddFavorite(int id)
+        {
+
+            var result = db.Favorites.Where(art => art.ArticleId == id && art.UserId == _userManager.GetUserId(User));
+            if (result.Count() == 0)
+            {
+                Favorite fav = new Favorite();
+
+                fav.ArticleId = id;
+                fav.UserId = _userManager.GetUserId(User);
+                db.Favorites.Add(fav);
+                db.SaveChanges();
+            }
+            else
+            {
+                Favorite fav = db.Favorites.Where(art => art.ArticleId == id && art.UserId == _userManager.GetUserId(User)).First();
+                db.Favorites.Remove(fav);
+                db.SaveChanges();
+            }
+            return Redirect("/Articles/Show/" + id);
+        }
+
+
+        public IActionResult UndoEdit(int id)
+        {
+
+            Article article = db.Articles.Include("Category")
+                                         .Where(art => art.Id == id)
+                                         .First();
+
+            var result = db.Edits.Where(ed => ed.ArticleId == article.Id);
+            if(result.Count()!=0)
+            { Edit editare = db.Edits.Where(ed => ed.ArticleId == article.Id).OrderByDescending(ed =>ed.tId).First();
+            
+                db.Articles.Find(id).Content = editare.Content;
+                db.Articles.Find(id).Title = editare.Title;
+                db.Edits.Remove(editare);
+
+                db.SaveChanges();
+            }
+            
             return Redirect("/Articles/Show/" + article.Id);
         }
 
@@ -195,6 +243,15 @@ namespace crowd_knowledge_contribution.Controllers
 
             SetAccessRights();
             ViewBag.Proteced = article.Protected;
+            var result = db.Favorites.Where(art => art.ArticleId == id && art.UserId == _userManager.GetUserId(User));
+            if (result.Count() == 0)
+            {
+                ViewBag.Favorit = "nu";
+            }
+            else
+            {
+                ViewBag.Favorit = "da";
+            }
 
             return View(article);
 
@@ -310,7 +367,7 @@ namespace crowd_knowledge_contribution.Controllers
             article.Categ = GetAllCategories();
 
 
-            if (article.UserId == _userManager.GetUserId(User) && ViewBag.Protected == "Unprotected" || User.IsInRole("Admin"))
+            if (article.UserId == _userManager.GetUserId(User) && article.Protected == "Unprotected" || User.IsInRole("Admin"))
             {
                 return View(article);
             }
@@ -330,11 +387,20 @@ namespace crowd_knowledge_contribution.Controllers
             var sanitizer = new HtmlSanitizer();
 
             Article article = db.Articles.Find(id);
+
+            Edit edit = new Edit();
+
+            edit.Title = article.Title;
+            edit.Content = article.Content;
+            edit.ArticleId = article.Id;
+            db.Edits.Add(edit);
+            db.SaveChanges();
+
             requestArticle.Categ = GetAllCategories();
 
             try
             {
-                if (article.UserId == _userManager.GetUserId(User) && ViewBag.Protected == "Unprotected" || User.IsInRole("Admin"))
+                if (article.UserId == _userManager.GetUserId(User) && article.Protected == "Unprotected" || User.IsInRole("Admin"))
                 {
                     article.Title = requestArticle.Title;
                     requestArticle.Content = sanitizer.Sanitize(requestArticle.Content);
@@ -369,7 +435,7 @@ namespace crowd_knowledge_contribution.Controllers
                                          .Where( art=> art.Id == id)
                                          .First();
 
-            if (article.UserId == _userManager.GetUserId(User) && ViewBag.Protected == "Unprotected" || User.IsInRole("Admin"))
+            if (article.UserId == _userManager.GetUserId(User) && article.Protected == "Unprotected" || User.IsInRole("Admin"))
             {
                 db.Articles.Remove(article);
                 db.SaveChanges();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using crowd_knowledge_contribution.Data;
 
@@ -11,9 +12,10 @@ using crowd_knowledge_contribution.Data;
 namespace crowd_knowledge_contribution.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230109101311_b")]
+    partial class b
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,32 +176,6 @@ namespace crowd_knowledge_contribution.Data.Migrations
 
             modelBuilder.Entity("crowd_knowledge_contribution.Models.Edit", b =>
                 {
-                    b.Property<int>("tId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("tId"), 1L, 1);
-
-                    b.Property<int>("ArticleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("tId");
-
-                    b.HasIndex("ArticleId");
-
-                    b.ToTable("Edits");
-                });
-
-            modelBuilder.Entity("crowd_knowledge_contribution.Models.Favorite", b =>
-                {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
@@ -209,17 +185,11 @@ namespace crowd_knowledge_contribution.Data.Migrations
                     b.Property<int>("ArticleId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Favorites");
+                    b.ToTable("Edits");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -396,31 +366,12 @@ namespace crowd_knowledge_contribution.Data.Migrations
             modelBuilder.Entity("crowd_knowledge_contribution.Models.Edit", b =>
                 {
                     b.HasOne("crowd_knowledge_contribution.Models.Article", "Article")
-                        .WithMany("Edits")
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Article");
-                });
-
-            modelBuilder.Entity("crowd_knowledge_contribution.Models.Favorite", b =>
-                {
-                    b.HasOne("crowd_knowledge_contribution.Models.Article", "Article")
                         .WithMany()
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("crowd_knowledge_contribution.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Article");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -482,8 +433,6 @@ namespace crowd_knowledge_contribution.Data.Migrations
             modelBuilder.Entity("crowd_knowledge_contribution.Models.Article", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Edits");
                 });
 
             modelBuilder.Entity("crowd_knowledge_contribution.Models.Category", b =>

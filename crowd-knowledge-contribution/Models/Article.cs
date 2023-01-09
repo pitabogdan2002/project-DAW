@@ -16,6 +16,7 @@ namespace crowd_knowledge_contribution.Models
         [Required(ErrorMessage = "Categoria este obligatorie")]
 
         public string Protected { get; set; } = "Unprotected";
+
         public int CategoryId { get; set; }
 
         public string? UserId { get; set; }
@@ -26,6 +27,8 @@ namespace crowd_knowledge_contribution.Models
 
         public virtual Category Category { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
+
+        public virtual ICollection<Edit> Edits { get; set; }
 
         [NotMapped]
         public IEnumerable<SelectListItem> Categ { get; set; }

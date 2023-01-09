@@ -34,6 +34,15 @@
 
     <hr />
 
+    @if (ViewBag.Favorit == "nu")
+    {
+        <a class="btn btn-success" href="/Articles/AddFavorite/@Model.Id"> Adauga la favorite </a>
+    }
+    else
+    {
+        <a class="btn btn-success" href="/Articles/AddFavorite/@Model.Id"> Elimina de la favorite </a>
+    }
+
     @if (ViewBag.AfisareButoane == true && Model.UserId == ViewBag.UserCurent && Model.Protected == "Unprotected" || ViewBag.EsteAdmin)
     {
         <div class="d-flex flex-row justify-content-between">
@@ -53,6 +62,8 @@
       @if(ViewBag.EsteAdmin)
     {
         <a class="btn btn-success" href="/Articles/Protect/@Model.Id"> Restrictionare acces </a>
+        <a class="btn btn-success" href="/Articles/UndoEdit/@Model.Id"> Versiunea precedenta </a>
+
     }
     
 

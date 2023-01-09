@@ -1,0 +1,39 @@
+﻿@model crowd_knowledge_contribution.Models.Favorite
+
+<h2>Afisare favorite</h2>
+
+<br />
+
+<br />
+<br />
+
+@foreach (crowd_knowledge_contribution.Models.Favorite fav in ViewBag.favorite)
+{
+    <div class="card">
+
+
+        <a class="btn btn-success" href="/Articles/Show/@fav.ArticleId">Afisare articol</a>
+
+        <div class="card-body">
+
+    <h3 class="card-title alert-success py-3 px-3 rounded-2">@fav.Article.Title</h3>
+
+            <div class="card-text">@Html.Raw(fav.Article.Content)</div>
+
+    <div class="d-flex justify-content-between flex-row mt-5">
+
+                @*<div><i class="bi bi-globe"></i> @fav.Article.Category.CategoryName</div>*@
+
+                <a class="btn btn-success" href="/Articles/Show/@fav.Article.Id">Afisare articol</a>
+
+                <span class="alert-success">@fav.Article.Date</span>
+
+    </div>
+
+    </div>
+
+    </div>
+
+    <br />
+    <br />
+}
