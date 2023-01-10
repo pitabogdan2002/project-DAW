@@ -4,7 +4,14 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Afisare articole</h2>
+<div class="bg-image"
+     style="
+    background-image: url('https://img.freepik.com/premium-vector/simple-tropical-seamless-repeat-pattern-with-green-leaves-exotic-plant-summer-design-fabric-textile-print-wrapping-paper-children-textile_97843-2127.jpg');
+    background-repeat: repeat;
+  ">
+    <div class="py-5 px-5">
+        <h1 class="d-flex justify-content-center">
+            Universul Cunoașterii...</h1>
 
 <br />
 
@@ -14,24 +21,21 @@
 }
 
 
+
 <div class="d-flex justify-content-center">
 
-    <a class="btn btn-outline-success" href="/Favorites/Index/">Afisare favorite</a>
-    <a class="btn btn-outline-success" href="/Categories/Index/">Afisare categorii</a>
-    <br />
-    <a class="btn btn-outline-success" href="/Articles/New">Adauga articol</a>
-    <br />
+            <a class="btn btn-info m-2" href="/Categories/Index/">Afisare categorii</a>
+            <a class="btn btn-info m-2" href="/Articles/New">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                    <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001z" />
+                </svg> Scrie un nou articol...
+            </a>
 
 </div>
 
 <br />
 
 
-    <label>Ordonati articolele</label>
-    <button class="btn btn-outline-success" type="submit"> @Html.ActionLink("A-Z", "Index", new {Criteriul = "Alfabetic"}) </button>
-<button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Z-A", "Index",  new {Criteriul = "Alfabetic_Inv"}) </button>
-<button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Cele mai vechi", "Index",  new {Criteriul = "Data"}) </button>
-<button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Cele mai recente", "Index",  new {Criteriul = "Data_Inv"})  </button>
 
 
 
@@ -39,33 +43,54 @@
 @* Motorul de cautare *@
 <form method="GET">
     <div class="input-group mb-3">
+
         <input type="text" class="form-control" placeholder="Search topics or keywords" name="search"
                value="@ViewBag.SearchString">
-        <button class="btn btn-outline-success" type="submit">Search</button>
+                <button class="btn btn-success" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg> Search
+                </button>
     </div>
 </form>
 
-@Html.Label("CategoryName", "Denumire categorie")
+<br/>
+        <span class="badge badge-primary bg-primary p-3 m-2">
+            @Html.Label("CategoryName", "Categorii: ")
+           </span>
 
 @foreach (var categorie in ViewBag.Categorii)
 {
     
     //@Html.Label("CategoryName", "Denumire categorie")
-    <br />
-    <a href="/Categories/Show/@categorie.Id" > @categorie.CategoryName </a> 
+            <a href="/Categories/Show/@categorie.Id" class="badge badge-primary alert alert-info m-2"> @categorie.CategoryName </a>
       
 }
 
 <br />
 <br />
 
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Sortare Articole
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+        <a class="dropdown-item"> <button class="btn btn-outline-success" type="submit"> @Html.ActionLink("A-Z", "Index", new {Criteriul = "Alfabetic"}) </button> </a>
+        <a class="dropdown-item"><button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Z-A", "Index",  new {Criteriul = "Alfabetic_Inv"}) </button> </a>
+        <a class="dropdown-item"> <button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Cele mai vechi", "Index",  new {Criteriul = "Data"}) </button></a>
+        <a class="dropdown-item"> <button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Cele mai recente", "Index",  new {Criteriul = "Data_Inv"})  </button></a>
+    </div>
+</div>
+
+<br />
 @foreach (crowd_knowledge_contribution.Models.Article article in ViewBag.Articles)
 {
-    <div class="card">
+    <div class="card text-white bg-info">
 
         @Html.Partial("ArticleInfo", article)
 
-        <a class="btn btn-success" href="/Articles/Show/@article.Id">Afisare articol</a>
+        <a class="btn btn-dark m-3" href="/Articles/Show/@article.Id">Citeste mai mult...</a>
 
         @*<div class="card-body">
 
@@ -115,4 +140,5 @@
             </ul>
         </nav>
     </div>
-
+    </div>
+    </div>

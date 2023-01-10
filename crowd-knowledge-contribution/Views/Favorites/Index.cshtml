@@ -1,6 +1,12 @@
 ﻿@model crowd_knowledge_contribution.Models.Favorite
 
-<h2>Afisare favorite</h2>
+<div class="bg-image"
+     style="
+    background-image: url('https://media.istockphoto.com/id/1191251531/vector/seamless-pattern-with-red-hearts-romantic-creamy-peach-background-for-textile-wallpaper.jpg?s=612x612&w=0&k=20&c=RqOsWkdXpYGaLs6uJ8-7Z0MjfXlIY73--E_oTjW1ZcE=');
+    background-repeat: repeat;
+  ">
+    <div class="py-5 px-5">
+<h2 class="text-center">Articole favorite</h2>
 
 <br />
 
@@ -12,11 +18,11 @@
     <div class="card">
 
 
-        <a class="btn btn-success" href="/Articles/Show/@fav.ArticleId">Afisare articol</a>
+        
 
         <div class="card-body">
 
-    <h3 class="card-title alert-success py-3 px-3 rounded-2">@fav.Article.Title</h3>
+    <h3 class="card-title bg-danger py-3 px-3 rounded-2 text-center">@fav.Article.Title</h3>
 
             <div class="card-text">@Html.Raw(fav.Article.Content)</div>
 
@@ -24,16 +30,17 @@
 
                 @*<div><i class="bi bi-globe"></i> @fav.Article.Category.CategoryName</div>*@
 
-                <a class="btn btn-success" href="/Articles/Show/@fav.Article.Id">Afisare articol</a>
-
-                <span class="alert-success">@fav.Article.Date</span>
+                <span class="alert-danger p-2">@fav.Article.Date</span>
 
     </div>
 
     </div>
-
+                <a class="btn btn-danger p-3 rounded-2 m-3" href="/Articles/Show/@fav.ArticleId">Afisare articol</a>
     </div>
 
     <br />
     <br />
+
 }
+</div>
+</div>
