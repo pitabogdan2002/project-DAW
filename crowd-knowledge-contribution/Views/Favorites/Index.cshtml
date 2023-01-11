@@ -12,35 +12,41 @@
 
 <br />
 <br />
+        @if (ViewBag.Mesaj == "da")
+        {
+            @foreach (crowd_knowledge_contribution.Models.Favorite fav in ViewBag.favorite)
+            {
+                <div class="card">
 
-@foreach (crowd_knowledge_contribution.Models.Favorite fav in ViewBag.favorite)
-{
-    <div class="card">
 
 
-        
 
-        <div class="card-body">
+                    <div class="card-body">
 
-    <h3 class="card-title bg-danger py-3 px-3 rounded-2 text-center">@fav.Article.Title</h3>
+                        <h3 class="card-title bg-danger py-3 px-3 rounded-2 text-center">@fav.Article.Title</h3>
 
-            <div class="card-text">@Html.Raw(fav.Article.Content)</div>
+                        <div class="card-text">@Html.Raw(fav.Article.Content)</div>
 
-    <div class="d-flex justify-content-between flex-row mt-5">
+                        <div class="d-flex justify-content-between flex-row mt-5">
 
-                @*<div><i class="bi bi-globe"></i> @fav.Article.Category.CategoryName</div>*@
+                            @*<div><i class="bi bi-globe"></i> @fav.Article.Category.CategoryName</div>*@
 
-                <span class="alert-danger p-2">@fav.Article.Date</span>
+                            <span class="alert-danger p-2">@fav.Article.Date</span>
 
+                        </div>
+
+                    </div>
+                    <a class="btn btn-danger p-3 rounded-2 m-3" href="/Articles/Show/@fav.ArticleId">Afisare articol</a>
+                </div>
+
+                <br />
+                <br />
+            }
+        }
+        else
+        {
+            <h1 class="text-center"> Nu aveți articole favorite!</h1>
+        }
+        <a class="btn btn-danger m-2" href="/Articles/Index/">Citeste articole</a>
     </div>
-
-    </div>
-                <a class="btn btn-danger p-3 rounded-2 m-3" href="/Articles/Show/@fav.ArticleId">Afisare articol</a>
-    </div>
-
-    <br />
-    <br />
-
-}
-</div>
 </div>

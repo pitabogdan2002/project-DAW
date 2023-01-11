@@ -27,7 +27,15 @@ namespace crowd_knowledge_contribution.Controllers
         public IActionResult Index()
         {
             var favorite = db.Favorites.Where(fav => fav.UserId == _userManager.GetUserId(User)).Include("Article");
-            ViewBag.favorite = favorite;
+            if (favorite.Count() > 0)
+            {
+                ViewBag.Mesaj = "da";
+                ViewBag.favorite = favorite;
+            }
+            else
+            {
+                ViewBag.Mesaj = "nu";
+            }
 
             return View();
         }

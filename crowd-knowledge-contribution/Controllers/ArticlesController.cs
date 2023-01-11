@@ -52,7 +52,7 @@ namespace crowd_knowledge_contribution.Controllers
                     articles = articles.OrderByDescending(s => s.Date);
                     break;
                 default:
-                    articles = articles.OrderBy(s => s.Date);
+                    articles = articles.OrderByDescending(s => s.Date);
                     break;
             }
 
@@ -161,7 +161,7 @@ namespace crowd_knowledge_contribution.Controllers
 
             ViewBag.Categorii = categories;
             // ViewBag.OriceDenumireSugestiva
-            ViewBag.Articles = articles;
+ 
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
@@ -179,10 +179,16 @@ namespace crowd_knowledge_contribution.Controllers
                                        .First();
 
             if (User.IsInRole("Admin"))
+                if(article.Protected=="Unprotected")
             {
                 db.Articles.Find(id).Protected = "Protected";
                 db.SaveChanges();
             }
+            else
+                {
+                    db.Articles.Find(id).Protected = "Unprotected";
+                    db.SaveChanges();
+                }
             return Redirect("/Articles/Show/" + article.Id);
         }
 

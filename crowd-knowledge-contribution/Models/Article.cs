@@ -26,6 +26,7 @@ namespace crowd_knowledge_contribution.Models
         public virtual ApplicationUser? User { get; set; }
 
         public virtual Category Category { get; set; }
+
         public virtual ICollection<Comment> Comments { get; set; }
 
         public virtual ICollection<Edit> Edits { get; set; }

@@ -55,33 +55,37 @@
 </form>
 
 <br/>
-        <span class="badge badge-primary bg-primary p-3 m-2">
-            @Html.Label("CategoryName", "Categorii: ")
-           </span>
-
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Categorii
+            </button>
+            <div class="dropdown-menu" aria-labelledby=" dropdownMenuButton">
 @foreach (var categorie in ViewBag.Categorii)
 {
     
     //@Html.Label("CategoryName", "Denumire categorie")
-            <a href="/Categories/Show/@categorie.Id" class="badge badge-primary alert alert-info m-2"> @categorie.CategoryName </a>
+                    <a class="dropdown-item" href="/Categories/Show/@categorie.Id"> @categorie.CategoryName </a>
       
 }
 
+            </div>
+        </div>
 <br />
 <br />
 
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Sortare Articole
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
-        <a class="dropdown-item"> <button class="btn btn-outline-success" type="submit"> @Html.ActionLink("A-Z", "Index", new {Criteriul = "Alfabetic"}) </button> </a>
-        <a class="dropdown-item"><button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Z-A", "Index",  new {Criteriul = "Alfabetic_Inv"}) </button> </a>
-        <a class="dropdown-item"> <button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Cele mai vechi", "Index",  new {Criteriul = "Data"}) </button></a>
-        <a class="dropdown-item"> <button class="btn btn-outline-success" type="submit"> @Html.ActionLink("Cele mai recente", "Index",  new {Criteriul = "Data_Inv"})  </button></a>
-    </div>
-</div>
+
+
+       
+
+        <div  class="d-flex flex-row"> 
+        <a class="btn btn-success m-1"> Sortare Articole </a>
+         <button class=" btn btn-warning m-1 " type="submit"> @Html.ActionLink("A-Z", "Index", new {Criteriul = "Alfabetic"}) </button>
+         <button class="btn btn-warning m-1" type="submit"> @Html.ActionLink("Z-A", "Index",  new {Criteriul = "Alfabetic_Inv"}) </button>
+         <button class="btn btn-warning m-1" type="submit"> @Html.ActionLink("Cele mai vechi", "Index",  new {Criteriul = "Data"}) </button>
+       <button class=" btn btn-warning m-1" type="submit"> @Html.ActionLink("Cele mai recente", "Index",  new {Criteriul = "Data_Inv"})  </button>
+       </div> 
+
 
 <br />
 @foreach (crowd_knowledge_contribution.Models.Article article in ViewBag.Articles)
