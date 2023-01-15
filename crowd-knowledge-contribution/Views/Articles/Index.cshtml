@@ -55,16 +55,16 @@
 </form>
 
 <br/>
-        <div class="dropdown">
+       @*<div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Categorii
             </button>
-            <div class="dropdown-menu" aria-labelledby=" dropdownMenuButton">
+            <div class="dropdown-menu" aria-labelledby=" dropdownMenuButton">*@
 @foreach (var categorie in ViewBag.Categorii)
 {
     
     //@Html.Label("CategoryName", "Denumire categorie")
-                    <a class="dropdown-item" href="/Categories/Show/@categorie.Id"> @categorie.CategoryName </a>
+                    <a  href="/Categories/Show/@categorie.Id"> @categorie.CategoryName </a>
       
 }
 

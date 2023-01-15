@@ -1,0 +1,67 @@
+﻿@model crowd_knowledge_contribution.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Lista Useri";
+    int index = 0;
+}
+
+<h3>@ViewBag.Title</h3>
+<hr />
+<br />
+
+<div class="bg-white bg-opacity-75 rounded">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Nr. crt</th>
+                <th scope="col">Nume</th>
+                <th scope="col">Rol Curent</th>
+                <th scope="col">Acțiune</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in ViewBag.Users)
+            {
+                <tr>
+                    <td>@(index++)</td>
+
+
+                    <td>@user.uname</td>
+                    <td>@user.role</td>
+                    <div class="d-flex">
+                    <td>
+                            @if (user.role == "Admin")
+                            {
+                            <div class="d-flex">
+                         
+
+                                <form asp-action="Index" asp-controller="Users" method="post">
+                                    <input type="hidden" name="role" value="Editor">
+                                    <input type="hidden" name="id" value="@user.Id">
+                                    <button class="btn btn-danger" type="submit">Make Editor</button>
+                                </form>
+                            </div>
+
+
+                            }
+
+                          
+
+                            @if (user.role == "Editor")
+                            {
+                                <div class="d-flex">
+                                <form asp-action="Index" asp-controller="Users" method="post" style="margin-right: 5px">
+                                    <input type="hidden" name="role" value="Admin">
+                                    <input type="hidden" name="id" value="@user.Id">
+                                    <button class="btn btn-danger" type="submit">Make Admin</button>
+                                </form>
+
+                            </div>
+                            }
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

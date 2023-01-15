@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace crowd_knowledge_contribution.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext db;
@@ -27,6 +27,7 @@ namespace crowd_knowledge_contribution.Controllers
             ViewBag.Categories = categories;
             return View();
         }
+        [Authorize(Roles = "Admin,Editor")]
         public ActionResult Show(int id)
         {
             Category category = db.Categories.Find(id);
@@ -39,12 +40,14 @@ namespace crowd_knowledge_contribution.Controllers
             return View(category);
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult New()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult New(Category cat)
         {
             try
@@ -61,6 +64,7 @@ namespace crowd_knowledge_contribution.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int id)
         {
             Category category = db.Categories.Find(id);
@@ -68,6 +72,7 @@ namespace crowd_knowledge_contribution.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int id, Category requestCategory)
         {
             Category category = db.Categories.Find(id);
@@ -86,6 +91,7 @@ namespace crowd_knowledge_contribution.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             Category category = db.Categories.Find(id);
